@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-windows-x86:
-    name: Build
+    name: Build (x86)
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -28,7 +28,7 @@ jobs:
           path: target/i686-pc-windows-msvc/release/*.dll
 
   build-linux-x86:
-    name: Build
+    name: Build (linux-x86)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
