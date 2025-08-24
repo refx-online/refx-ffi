@@ -9,7 +9,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 interoptopus = "0.14.14"
-refx-pp = { git = "https://github.com/refx-online/refx-pp-rs", rev = "2e5e1f7261f737c99ece3041a7dda55b4b684980", features = ["sync"] }
+refx-pp = { git = "https://github.com/refx-online/refx-pp-rs", rev = "dd9b553e6fd9fbf502e88bb6df73469e3f98608c", features = ["sync"] }
 rosu-mods = { version = "0.3.0", default-features = false, features = ["serde"] }
 serde = { version = "1.0.203" }
 serde_json = { version = "1.0.140" }
