@@ -50,7 +50,8 @@ pub unsafe extern "C" fn calculate_score(
     accuracy: f64,
     miss_count: u32,
     passed_objects: FFIOption<u32>,
-    lazer: bool
+    lazer: bool,
+    score: u32,
 ) -> CalculatePerformanceResult {
     let path_str = CStr::from_ptr(beatmap_path).to_str().unwrap();
     let beatmap = Beatmap::from_path(Path::new(path_str)).unwrap();
@@ -72,7 +73,8 @@ pub unsafe extern "C" fn calculate_score(
         .unwrap()
         .lazer(lazer)
         .combo(max_combo)
-        .misses(miss_count);
+        .misses(miss_count)
+        .legacy_total_score(i64::from(score));
 
     calculator = match mods {
         GameMods::Legacy(legacy_mods) => {
