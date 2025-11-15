@@ -20,10 +20,7 @@ namespace My.Company
 
 
         [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "calculate_score")]
-        public static extern CalculatePerformanceResult calculate_score(ref sbyte beatmap_path, uint mode, ref sbyte mods, uint max_combo, double accuracy, uint miss_count, Optionu32 passed_objects, bool lazer);
-
-        [DllImport(NativeLib, CallingConvention = CallingConvention.Cdecl, EntryPoint = "calculate_score_bytes")]
-        public static extern CalculatePerformanceResult calculate_score_bytes(ref byte beatmap_bytes, uint len, uint mode, uint mods, uint max_combo, double accuracy, uint miss_count, Optionu32 passed_objects, bool lazer);
+        public static extern CalculatePerformanceResult calculate_score(ref sbyte beatmap_path, uint mode, ref sbyte mods, uint max_combo, double accuracy, uint miss_count, Optionu32 passed_objects, bool lazer, uint score);
 
     }
 

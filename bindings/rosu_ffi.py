@@ -10,19 +10,14 @@ def init_lib(path):
     global c_lib
     c_lib = ctypes.cdll.LoadLibrary(path)
 
-    c_lib.calculate_score.argtypes = [ctypes.POINTER(ctypes.c_int8), ctypes.c_uint32, ctypes.POINTER(ctypes.c_int8), ctypes.c_uint32, ctypes.c_double, ctypes.c_uint32, Optionu32, ctypes.c_bool]
-    c_lib.calculate_score_bytes.argtypes = [ctypes.POINTER(ctypes.c_uint8), ctypes.c_uint32, ctypes.c_uint32, ctypes.c_uint32, ctypes.c_uint32, ctypes.c_double, ctypes.c_uint32, Optionu32, ctypes.c_bool]
+    c_lib.calculate_score.argtypes = [ctypes.POINTER(ctypes.c_int8), ctypes.c_uint32, ctypes.POINTER(ctypes.c_int8), ctypes.c_uint32, ctypes.c_double, ctypes.c_uint32, Optionu32, ctypes.c_bool, ctypes.c_uint32]
 
     c_lib.calculate_score.restype = CalculatePerformanceResult
-    c_lib.calculate_score_bytes.restype = CalculatePerformanceResult
 
 
 
-def calculate_score(beatmap_path: ctypes.POINTER(ctypes.c_int8), mode: int, mods: ctypes.POINTER(ctypes.c_int8), max_combo: int, accuracy: float, miss_count: int, passed_objects: Optionu32, lazer: bool) -> CalculatePerformanceResult:
-    return c_lib.calculate_score(beatmap_path, mode, mods, max_combo, accuracy, miss_count, passed_objects, lazer)
-
-def calculate_score_bytes(beatmap_bytes: ctypes.POINTER(ctypes.c_uint8), len: int, mode: int, mods: int, max_combo: int, accuracy: float, miss_count: int, passed_objects: Optionu32, lazer: bool) -> CalculatePerformanceResult:
-    return c_lib.calculate_score_bytes(beatmap_bytes, len, mode, mods, max_combo, accuracy, miss_count, passed_objects, lazer)
+def calculate_score(beatmap_path: ctypes.POINTER(ctypes.c_int8), mode: int, mods: ctypes.POINTER(ctypes.c_int8), max_combo: int, accuracy: float, miss_count: int, passed_objects: Optionu32, lazer: bool, score: int) -> CalculatePerformanceResult:
+    return c_lib.calculate_score(beatmap_path, mode, mods, max_combo, accuracy, miss_count, passed_objects, lazer, score)
 
 
 

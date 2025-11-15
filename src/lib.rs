@@ -11,9 +11,6 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::path::Path;
 
-pub mod mods;
-use mods::{GameMods, parse_mods};
-
 #[ffi_type]
 #[repr(C)]
 #[derive(Clone, Default, PartialEq)]
@@ -50,13 +47,26 @@ pub unsafe extern "C" fn calculate_score(
     accuracy: f64,
     miss_count: u32,
     passed_objects: FFIOption<u32>,
-    lazer: bool,
+    #[allow(unused_variables)]
+    lazer: bool, // unused
     score: u32,
 ) -> CalculatePerformanceResult {
     let path_str = CStr::from_ptr(beatmap_path).to_str().unwrap();
     let beatmap = Beatmap::from_path(Path::new(path_str)).unwrap();
     
-    let mode_ = match mode {
+    // NOTE: im not gonna update the client cuz my pc is VERY slow to even open the project
+    //       so im gonna use this very *CURSED* str to u32 because
+    //       the client passes (uint)mods.to_string() to the ffi
+    //       https://stackoverflow.com/questions/66582380/pass-string-from-c-sharp-to-rust-using-ffi
+    let mods: u32 = { 
+        CStr::from_ptr(mods)
+            .to_str()
+            .ok()
+            .and_then(|s| s.parse::<u32>().ok())
+            .unwrap_or(0)
+    };
+    
+    let mode = match mode {
         0 => GameMode::Osu,
         1 => GameMode::Taiko,
         2 => GameMode::Catch,
@@ -64,74 +74,18 @@ pub unsafe extern "C" fn calculate_score(
         _ => panic!("Invalid mode"),
     };
     
-    let mods_str = CStr::from_ptr(mods).to_str().unwrap();
-    let mods = parse_mods(mods_str, mode_).unwrap_or_default();
-    
     let mut calculator = beatmap
         .performance()
-        .try_mode(mode_)
-        .unwrap()
-        .lazer(lazer)
+        .mods(mods)
         .combo(max_combo)
         .misses(miss_count)
-        .legacy_total_score(i64::from(score));
-
-    calculator = match mods {
-        GameMods::Legacy(legacy_mods) => {
-            if lazer {
-                calculator.mods(legacy_mods)
-            } else {
-                calculator.mods(legacy_mods.bits())
-            }
-        },
-        GameMods::Intermode(intermode_mods) => calculator.mods(intermode_mods),
-        GameMods::Lazer(lazer_mods) => calculator.mods(lazer_mods),
-    };
+        .accuracy(accuracy)
+        .legacy_total_score(i64::from(score))
+        .mode_or_ignore(mode);
 
     if let Some(passed_objects) = passed_objects.into_option() {
         calculator = calculator.passed_objects(passed_objects);
     }
-
-    calculator = calculator.accuracy(accuracy);
-
-    let rosu_result = calculator.calculate();
-    CalculatePerformanceResult::from_attributes(rosu_result)   
-}
-
-#[ffi_function]
-#[no_mangle]
-pub unsafe extern "C" fn calculate_score_bytes(
-    beatmap_bytes: *const u8, 
-    len: u32,
-    mode: u32,
-    mods: u32,
-    max_combo: u32,
-    accuracy: f64,
-    miss_count: u32,
-    passed_objects: FFIOption<u32>,
-    lazer: bool
-) -> CalculatePerformanceResult {
-    let beatmap = Beatmap::from_bytes(std::slice::from_raw_parts(beatmap_bytes, len as usize)).unwrap();
-    let mut calculator = beatmap
-        .performance()
-        .try_mode(match mode {
-            0 => GameMode::Osu,
-            1 => GameMode::Taiko,
-            2 => GameMode::Catch,
-            3 => GameMode::Mania,
-            _ => panic!("Invalid mode"),
-        })
-        .unwrap()
-        .mods(mods)
-        .lazer(lazer)
-        .combo(max_combo)
-        .misses(miss_count);
-
-    if let Some(passed_objects) = passed_objects.into_option() {
-        calculator = calculator.passed_objects(passed_objects);
-    }
-
-    calculator = calculator.accuracy(accuracy);
 
     let rosu_result = calculator.calculate();
     CalculatePerformanceResult::from_attributes(rosu_result)
@@ -141,6 +95,5 @@ pub fn my_inventory() -> Inventory {
     InventoryBuilder::new()
         .register(extra_type!(CalculatePerformanceResult))
         .register(function!(calculate_score))
-        .register(function!(calculate_score_bytes))
         .inventory()
 }

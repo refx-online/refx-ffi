@@ -8,7 +8,7 @@ fn bindings_c() -> Result<(), Error> {
             ifndef: "rosu_ffi".to_string(),
             ..Config::default()
         },
-        rosu_ffi::my_inventory(),
+        refx_ffi::my_inventory(),
     )
     .write_file("bindings/rosu_ffi.h")?;
 

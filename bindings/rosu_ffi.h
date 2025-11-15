@@ -29,9 +29,7 @@ typedef struct optionu32
     } optionu32;
 
 
-calculateperformanceresult calculate_score(const int8_t* beatmap_path, uint32_t mode, const int8_t* mods, uint32_t max_combo, double accuracy, uint32_t miss_count, optionu32 passed_objects, bool lazer);
-
-calculateperformanceresult calculate_score_bytes(const uint8_t* beatmap_bytes, uint32_t len, uint32_t mode, uint32_t mods, uint32_t max_combo, double accuracy, uint32_t miss_count, optionu32 passed_objects, bool lazer);
+calculateperformanceresult calculate_score(const int8_t* beatmap_path, uint32_t mode, const int8_t* mods, uint32_t max_combo, double accuracy, uint32_t miss_count, optionu32 passed_objects, bool lazer, uint32_t score);
 
 
 #ifdef __cplusplus
